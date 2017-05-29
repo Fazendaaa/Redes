@@ -64,7 +64,7 @@ void Server::createConnection(void) {
 	this->address.sin_port = htons(this->port);
 
 	this->bindConnection();
-	this->maxPending(3);
+	this->maxPending(13);
 }
 
 void Server::initializeClients(void) {
