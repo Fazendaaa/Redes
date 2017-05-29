@@ -64,7 +64,11 @@ class Flight {
     }
 
     void connectSensors(){
-      
+      for(int i=0;i<4;i++){
+        for(int j=0;j<3;j++){
+          Client *aux = this->sensors[i]->getPyshical(j)->getClient();
+        }
+      }
     }
 
   //Sensor getSensors()  {

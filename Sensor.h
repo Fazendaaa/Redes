@@ -15,11 +15,13 @@ class Sensor{
 		vector <float> dataValue;	//data
 	 	string sensorName;	//sensor name
 		string dataType;	//data type
+		Client connection{};
 	public:
 		Sensor(string sensorName,string dataType);
 		vector <float> getSensorValue();
 		string getSensorName();
 		string getDataType();
+		Client* getClient();
 
 
 
@@ -29,6 +31,13 @@ Sensor::Sensor(string sensorName,string dataType){
 	this->sensorName = sensorName;
 	this->dataType = dataType;
 
+
+}
+
+
+
+Client* Sensor::getClient(){
+	return &this->connection;
 }
 
 vector <float> Sensor::getSensorValue(){
