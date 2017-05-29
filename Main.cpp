@@ -10,7 +10,8 @@ using namespace std;
   cout << "Done\n";
 
   Virtual *v = voo.getVirtual(0);
-  cout << v->getPyshical(0)->getSensorName();
+  cout << v->getPyshical(0)->getSensorName() <<endl;
+  cout << v->getPyshical(1)->getSensorName() << endl;
 
 
   return 0;
