@@ -18,7 +18,7 @@ class Sensor{
 		Client connection{};
 	public:
 		Sensor(string sensorName,string dataType);
-		vector <float> getSensorValue();
+		int getSensorValue();
 		string getSensorName();
 		string getDataType();
 		Client* getClient();
@@ -40,53 +40,52 @@ Client* Sensor::getClient(){
 	return &this->connection;
 }
 
-vector <float> Sensor::getSensorValue(){
+int Sensor::getSensorValue(){
 
 	//termometor, altimetro, barometro, acelerometro, umidade, distancia, visibilidade, tempo, turbulencia.Sensor de banheiro,Sensor de birds
 
 	srand (time(NULL));
-
-	for(int i=0;i<24;i++){
+	int x;
 
 		if(this->sensorName == "termometro"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 100 + 1;
 		}
 		if(this->sensorName == "altimetro"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "barometro"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "acelerometro"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "umidade"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "distancia"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "visibilidade"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "tempo"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "turbulencia"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "banheiro"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "passaros"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
 		if(this->sensorName == "trem_de_pouso"){
-			this->dataValue.push_back(rand() % 10 + 1);
+			x = rand() % 10 + 1;
 		}
-	}
 
-	return this->dataValue;
+
+	return x;
 
 
 

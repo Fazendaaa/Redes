@@ -4,7 +4,8 @@
 #include "Sensor.h"
 #include "Virtual.h"
 #include <vector>
-
+#include <string>
+#include <unistd.h>
 using namespace std;
 
 class Flight {
@@ -76,6 +77,20 @@ class Flight {
           //} while(x);
 
         }
+      }
+    }
+
+    void sendInformation(){
+      for(int k=0;k<2000;k++){
+        for(int i=0;i<4;i++){
+          for(int j=0;j<3;j++){
+            Client *aux = this->sensors[i]->getPyshical(j)->getClient();
+            string message = this->sensors[i]->getPyshical(j)->getSensorName();
+            message = message + "|" + to_string(this->sensors[i]->getPyshical(j)->getSensorValue()) + "\n";
+            aux->upload(message);
+          }
+        }
+        usleep(20000);
       }
     }
 

@@ -13,6 +13,7 @@ using namespace std;
   cout << v->getPyshical(0)->getSensorName() <<endl;
   cout << v->getPyshical(1)->getSensorName() << endl;
   voo.connectSensors();
+  voo.sendInformation();
 
   return 0;
 }

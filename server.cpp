@@ -123,13 +123,13 @@ void Server::run(void) {
         else{
 					//this->handleSocket();
 					for(int i=0;i<this->max_clients;i++){
-					 cout << handleMessage(i) << i ;
+					 cout << handleMessage(i)  ;
 
 
 				 }
 
 				}
-				
+
     }
 
 }
@@ -217,22 +217,27 @@ string Server::handleMessage(int i) {
 		this->sd = this->client_socket[i];
 
 
-		//if(FD_ISSET(this->sd , &this->readfds)) {
-			//Check if it was for closing , and also read the
-			//incoming message
-
-			this->valread = read(this->sd, this->buffer, 1024);
+		if(FD_ISSET(this->sd , &this->readfds)) {
+			if(0 == (this->valread = read(this->sd, this->buffer, 1024))){
 				//Somebody disconnected , get his details and print
-			this->buffer[this->valread] = '\0';
-
-			send(this->sd, this->buffer, strlen(this->buffer), 0);
-			// Remove trailing info from client
-			this->buffer[strcspn(this->buffer, "\r\n")] = 0;
-			cout << "Boaaaaaaaaaa #" << i <<": " << this->buffer << endl;
-			memset(this->buffer, 0, sizeof(char) * 1025);
+				this->closeSocket(i);
+				cout << "test\n";
+			}
+			//Echo back the message that came in
+			else {
+				//set the string terminating NULL byte on the end
+				//of the data read
+				this->buffer[this->valread] = '\0';
+				//cout << "jhonathan test" << this->buffer << endl;
+				send(this->sd, this->buffer, strlen(this->buffer), 0);
+				// Remove trailing info from client
+				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
+				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
+				memset(this->buffer, 0, sizeof(char) * 1025);
+			}
 			return this->buffer;
 
-		//}
+		}
 
 }
 
