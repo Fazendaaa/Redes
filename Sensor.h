@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
-#include "client.h"
+//#include "client.h"
 
 using namespace std;
 
@@ -15,13 +15,13 @@ class Sensor{
 		vector <float> dataValue;	//data
 	 	string sensorName;	//sensor name
 		string dataType;	//data type
-		Client connection{};
+		//Client connection{};
 	public:
 		Sensor(string sensorName,string dataType);
 		int getSensorValue();
 		string getSensorName();
 		string getDataType();
-		Client* getClient();
+		//Client* getClient();
 
 
 
@@ -36,9 +36,9 @@ Sensor::Sensor(string sensorName,string dataType){
 
 
 
-Client* Sensor::getClient(){
-	return &this->connection;
-}
+//Client* Sensor::getClient(){
+//	return &this->connection;
+//}
 
 int Sensor::getSensorValue(){
 

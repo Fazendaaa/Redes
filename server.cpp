@@ -13,8 +13,8 @@
 #include <algorithm>
 #include <unistd.h>
 #include <vector>
-//#include "Virtual.h"
-
+#include "Virtual.h"
+#include <stdexcept>
 using namespace std;
 
 typedef struct sockaddr Socket;
@@ -30,7 +30,7 @@ class Server {
 		char const *handshake{"Server message: Connection accpeted\n"};
 		fd_set readfds;
 
-		//vector <Virtual *> sensors{};
+		vector <Virtual *> sensors{};
 
 		void setError(const char *);
 
@@ -51,10 +51,10 @@ class Server {
 	public:
 		Server() {
 			createConnection();
-			//for(int i=0;i<4;i++){
-			//	Virtual *aux = new Virtual();
-			//	this->sensors.push_back(aux);
-			//}
+			for(int i=0;i<4;i++){
+				Virtual *aux = new Virtual();
+				this->sensors.push_back(aux);
+			}
 		}
 		Server(int);
 
@@ -243,7 +243,7 @@ void Server::handleSocketMessage(int i) {
 				// Remove trailing info from client
 				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
 				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
-				//createObjects(this->buffer);
+				createObjects(this->buffer);
 				memset(this->buffer, 0, sizeof(char) * 1025);
 				//return this->buffer;
 			}
@@ -252,16 +252,25 @@ void Server::handleSocketMessage(int i) {
 
 }
 
-void createObjects(string message){
+void Server::createObjects(string message){
 
 
 	size_t found;
-	/*if ((found = s.find("|")) != string::npos)
+	if ((found = message.find("|")) != string::npos)
 	{
-    cout << "left side = " << s.substr(0,found) << endl;
-    cout << "right side = " << s.substr(found+1, string::npos) << endl;
+    cout << "left side = " << message.substr(0,found) << endl;
+    cout << "right side = " << message.substr(found+1, string::npos) << endl;
 
-	}*/
+	}
+
+	string number = message.substr(found+1, string::npos);
+	try{
+		stoi(number);
+	}
+	catch(const std::invalid_argument& ia){
+		cout << "is not \n";
+	}
+
 
 	/*
 

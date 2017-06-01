@@ -9,9 +9,9 @@ using namespace std;
   Flight voo{};
   cout << "Done\n";
 
-  Virtual *v = voo.getVirtual(0);
-  cout << v->getPyshical(0)->getSensorName() <<endl;
-  cout << v->getPyshical(1)->getSensorName() << endl;
+  //Virtual *v = voo.getVirtual(0);
+  //cout << v->getPyshical(0)->getSensorName() <<endl;
+  //cout << v->getPyshical(1)->getSensorName() << endl;
   voo.connectSensors();
   voo.sendInformation();
 
