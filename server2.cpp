@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include <unistd.h>
 using namespace std;
 
 typedef struct sockaddr Socket;
@@ -41,7 +40,7 @@ class Server {
 		void setSocket(void);
 		void handleSocket(void);
 		void closeSocket(int);
-		string handleMessage(int);
+
 	public:
 		Server() {
 			createConnection();
@@ -97,11 +96,10 @@ void Server::maxPending(int max) {
 
 void Server::run(void) {
 	cout << "Waiting for connections..." << endl;
-	int full = 11;
 	while(true) {
 		//clear the socket set
-				int flag=0;
         FD_ZERO(&this->readfds);
+
         //add master socket to set
         FD_SET(this->master_socket, &this->readfds);
         this->max_sd = this->master_socket;
@@ -120,18 +118,9 @@ void Server::run(void) {
 					this->addSocket();
 
         //else its some IO operation on some other socket
-        else{
-					//this->handleSocket();
-					for(int i=0;i<this->max_clients;i++){
-					 cout << handleMessage(i) << i ;
-
-
-				 }
-
-				}
-				
+        else
+					this->handleSocket();
     }
-
 }
 
 void Server::addChild(void) {
@@ -185,12 +174,9 @@ void Server::handleSocket(void) {
 	for (int i = 0; i < this->max_clients; i++) {
 		this->sd = this->client_socket[i];
 
-		//read(this->sd, this->buffer, 1024);
-		//cout << "oooooooooooooooooooo" << this->buffer << endl ;
 		if(FD_ISSET(this->sd , &this->readfds)) {
 			//Check if it was for closing , and also read the
 			//incoming message
-			cout << "Entra\n\n";
 			if(0 == (this->valread = read(this->sd, this->buffer, 1024))){
 				//Somebody disconnected , get his details and print
 				this->closeSocket(i);
@@ -201,7 +187,6 @@ void Server::handleSocket(void) {
 				//set the string terminating NULL byte on the end
 				//of the data read
 				this->buffer[this->valread] = '\0';
-				//cout << "jhonathan test" << this->buffer << endl;
 				send(this->sd, this->buffer, strlen(this->buffer), 0);
 				// Remove trailing info from client
 				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
@@ -210,30 +195,6 @@ void Server::handleSocket(void) {
 			}
 		}
 	}
-}
-
-string Server::handleMessage(int i) {
-
-		this->sd = this->client_socket[i];
-
-
-		//if(FD_ISSET(this->sd , &this->readfds)) {
-			//Check if it was for closing , and also read the
-			//incoming message
-
-			this->valread = read(this->sd, this->buffer, 1024);
-				//Somebody disconnected , get his details and print
-			this->buffer[this->valread] = '\0';
-
-			send(this->sd, this->buffer, strlen(this->buffer), 0);
-			// Remove trailing info from client
-			this->buffer[strcspn(this->buffer, "\r\n")] = 0;
-			cout << "Boaaaaaaaaaa #" << i <<": " << this->buffer << endl;
-			memset(this->buffer, 0, sizeof(char) * 1025);
-			return this->buffer;
-
-		//}
-
 }
 
 void Server::closeSocket(int pos) {

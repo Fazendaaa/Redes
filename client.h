@@ -19,7 +19,7 @@ typedef struct sockaddr_in Socket;
 
 class Client {
 	Socket server{};
-	int socket_id{0}, readSize{0}, port{8080};
+	int socket_id{0}, readSize{0}, port{2220};
 	char buffer[1025];
 	const string host{"127.0.0.1"};
 

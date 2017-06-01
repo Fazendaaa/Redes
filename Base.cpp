@@ -4,13 +4,13 @@ class Base {
 	private:
 		int mainPage () const {
 			int opt;
-			cout << "\n**Gerenciamento de Sensores**\n1. Sensores Fixos\n2. Sensores Moveis\n3. Sensores Virtuais\n0. Sair\n\nOpcao: ";
+			cout << "\n**Gerenciazmento de Sensores**\n1. Sensores Fixos\n2. Sensores Moveis\n3. Sensores Virtuais\n0. Sair\n\nOpcao: ";
 			cin >> opt;
 			return opt;
-		} 
+		}
 
 		void statSensor() const {
-			int opt;			
+			int opt;
 			do {
 				cout << "1. Atualizar\t0.Voltar\nOpcao: ";
 				cin >> opt;
@@ -18,7 +18,7 @@ class Base {
 		}
 
 		void mobiSensor() const {
-			int opt;			
+			int opt;
 			do {
 				cout << "1. Atualizar\t0.Voltar\nOpcao: ";
 				cin >> opt;
@@ -26,16 +26,16 @@ class Base {
 		}
 
 		void virtSensor() const {
-			int opt;			
+			int opt;
 			do {
 				cout << "1. Atualizar\t0.Voltar\nOpcao: ";
 				cin >> opt;
 			} while (opt);
 		}
-	
+
 	public:
 		void userInterface () const {
-			int opt;			
+			int opt;
 			do{	opt = mainPage ();
 				if 	(opt==1) statSensor();
 				else if (opt==2) mobiSensor();
@@ -47,6 +47,8 @@ class Base {
 
 int main () {
 	Base b;
-	b.userInterface();
+	Server s{};
+	s.run{}
+	//b.userInterface();
 	return 0;
 }

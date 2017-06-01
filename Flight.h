@@ -49,26 +49,32 @@ class Flight {
     this->sensors[0]->addSensor(new Sensor("altimetro","atm"));
     this->sensors[0]->addSensor(new Sensor("barometro","atm"));
 
-    this->sensors[1]->addSensor(new Sensor("termometro","atm"));
-    this->sensors[1]->addSensor(new Sensor("termometro","atm"));
-    this->sensors[1]->addSensor(new Sensor("termometro","atm"));
+    this->sensors[1]->addSensor(new Sensor("acelerometro","atm"));
+    this->sensors[1]->addSensor(new Sensor("umidade","atm"));
+    this->sensors[1]->addSensor(new Sensor("distancia","atm"));
 
-    this->sensors[2]->addSensor(new Sensor("termometro","atm"));
-    this->sensors[2]->addSensor(new Sensor("termometro","atm"));
-    this->sensors[2]->addSensor(new Sensor("termometro","atm"));
+    this->sensors[2]->addSensor(new Sensor("visibilidade","atm"));
+    this->sensors[2]->addSensor(new Sensor("tempo","atm"));
+    this->sensors[2]->addSensor(new Sensor("turbulencia","atm"));
 
-    this->sensors[3]->addSensor(new Sensor("termometro","atm"));
-    this->sensors[3]->addSensor(new Sensor("termometro","atm"));
-    this->sensors[3]->addSensor(new Sensor("termometro","atm"));
+    this->sensors[3]->addSensor(new Sensor("banheiro","atm"));
+    this->sensors[3]->addSensor(new Sensor("passaros","atm"));
+    this->sensors[3]->addSensor(new Sensor("trem_de_pouso","atm"));
 
     }
 
     void connectSensors(){
+      bool x;
       for(int i=0;i<4;i++){
         for(int j=0;j<3;j++){
           Client *aux = this->sensors[i]->getPyshical(j)->getClient();
           string message = this->sensors[i]->getPyshical(j)->getSensorName();
+          message = message + "|" + this->sensors[i]->getPyshical(j)->getDataType();
           aux->upload(message);
+          //do {
+          //  x = aux->upload(message);
+          //} while(x);
+
         }
       }
     }
