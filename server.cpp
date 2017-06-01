@@ -12,6 +12,9 @@
 #include <string>
 #include <algorithm>
 #include <unistd.h>
+#include <vector>
+//#include "Virtual.h"
+
 using namespace std;
 
 typedef struct sockaddr Socket;
@@ -27,6 +30,8 @@ class Server {
 		char const *handshake{"Server message: Connection accpeted\n"};
 		fd_set readfds;
 
+		//vector <Virtual *> sensors{};
+
 		void setError(const char *);
 
 		void createConnection(void);
@@ -41,10 +46,15 @@ class Server {
 		void setSocket(void);
 		void handleSocket(void);
 		void closeSocket(int);
-		string handleMessage(int);
+		void handleSocketMessage(int);
+		void createObjects(string);
 	public:
 		Server() {
 			createConnection();
+			//for(int i=0;i<4;i++){
+			//	Virtual *aux = new Virtual();
+			//	this->sensors.push_back(aux);
+			//}
 		}
 		Server(int);
 
@@ -98,6 +108,7 @@ void Server::maxPending(int max) {
 void Server::run(void) {
 	cout << "Waiting for connections..." << endl;
 	int full = 11;
+	string messageFromSensor;
 	while(true) {
 		//clear the socket set
 				int flag=0;
@@ -123,8 +134,7 @@ void Server::run(void) {
         else{
 					//this->handleSocket();
 					for(int i=0;i<this->max_clients;i++){
-					 cout << handleMessage(i)  ;
-
+					 handleSocketMessage(i)  ;
 
 				 }
 
@@ -212,7 +222,7 @@ void Server::handleSocket(void) {
 	}
 }
 
-string Server::handleMessage(int i) {
+void Server::handleSocketMessage(int i) {
 
 		this->sd = this->client_socket[i];
 
@@ -233,12 +243,44 @@ string Server::handleMessage(int i) {
 				// Remove trailing info from client
 				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
 				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
+				//createObjects(this->buffer);
 				memset(this->buffer, 0, sizeof(char) * 1025);
+				//return this->buffer;
 			}
-			return this->buffer;
 
 		}
 
+}
+
+void createObjects(string message){
+
+
+	size_t found;
+	/*if ((found = s.find("|")) != string::npos)
+	{
+    cout << "left side = " << s.substr(0,found) << endl;
+    cout << "right side = " << s.substr(found+1, string::npos) << endl;
+
+	}*/
+
+	/*
+
+	this->sensors[0]->addSensor(new Sensor("termometro","atm"));
+	this->sensors[0]->addSensor(new Sensor("altimetro","atm"));
+	this->sensors[0]->addSensor(new Sensor("barometro","atm"));
+
+	this->sensors[1]->addSensor(new Sensor("acelerometro","atm"));
+	this->sensors[1]->addSensor(new Sensor("umidade","atm"));
+	this->sensors[1]->addSensor(new Sensor("distancia","atm"));
+
+	this->sensors[2]->addSensor(new Sensor("visibilidade","atm"));
+	this->sensors[2]->addSensor(new Sensor("tempo","atm"));
+	this->sensors[2]->addSensor(new Sensor("turbulencia","atm"));
+
+	this->sensors[3]->addSensor(new Sensor("banheiro","atm"));
+	this->sensors[3]->addSensor(new Sensor("passaros","atm"));
+	this->sensors[3]->addSensor(new Sensor("trem_de_pouso","atm"));
+	*/
 }
 
 void Server::closeSocket(int pos) {
