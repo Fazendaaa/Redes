@@ -15,25 +15,37 @@ class Sensor{
 		vector <float> dataValue;	//data
 	 	string sensorName;	//sensor name
 		string dataType;	//data type
+		int value;
 		//Client connection{};
 	public:
 		Sensor(string sensorName,string dataType);
+		Sensor();
 		int getSensorValue();
 		string getSensorName();
 		string getDataType();
+		int getStoredValue();
+		void setValue(int x);
+		void setSensor(string,string);
 		//Client* getClient();
 
 
 
 };
 
+Sensor::Sensor(){
+	this->sensorName = "NULL";
+	this->dataType = "NULL";
+}
 Sensor::Sensor(string sensorName,string dataType){
 	this->sensorName = sensorName;
 	this->dataType = dataType;
 
 
 }
-
+void Sensor::setSensor(string sensorName,string dataType){
+	this->sensorName = sensorName;
+	this->dataType = dataType;
+}
 
 
 //Client* Sensor::getClient(){
@@ -83,12 +95,20 @@ int Sensor::getSensorValue(){
 		if(this->sensorName == "trem_de_pouso"){
 			x = rand() % 10 + 1;
 		}
+		setValue(x);
 
 
 	return x;
 
 
 
+}
+
+int Sensor::getStoredValue(){
+	return this->value;
+}
+void Sensor::setValue(int x){
+	this->value = x;
 }
 
 

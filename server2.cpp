@@ -11,6 +11,10 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <unistd.h>
+#include <vector>
+#include "Virtual.h"
+#include <stdexcept>
 using namespace std;
 
 typedef struct sockaddr Socket;
@@ -26,6 +30,8 @@ class Server {
 		char const *handshake{"Server message: Connection accpeted\n"};
 		fd_set readfds;
 
+		vector <Virtual *> sensors{};
+
 		void setError(const char *);
 
 		void createConnection(void);
@@ -40,10 +46,23 @@ class Server {
 		void setSocket(void);
 		void handleSocket(void);
 		void closeSocket(int);
-
+		void handleSocketMessage(int);
+		void handleObjects(string);
+		void createObjects(string,string);
+		void updateSensors(string sensorName,int n);
+		void displaySensors();
 	public:
 		Server() {
 			createConnection();
+			cout << "Get in here \n\n\n\n";
+			for(int i=0;i<4;i++){
+				Virtual *aux = new Virtual();
+				this->sensors.push_back(aux);
+				for(int j=0;j<3;j++){
+					this->sensors[i]->addSensor(new Sensor());
+					//this->sensors[i]->addSensor(NULL);
+				}
+			}
 		}
 		Server(int);
 
@@ -96,10 +115,12 @@ void Server::maxPending(int max) {
 
 void Server::run(void) {
 	cout << "Waiting for connections..." << endl;
+	int full = 11;
+	string messageFromSensor;
 	while(true) {
 		//clear the socket set
+				int flag=0;
         FD_ZERO(&this->readfds);
-
         //add master socket to set
         FD_SET(this->master_socket, &this->readfds);
         this->max_sd = this->master_socket;
@@ -118,9 +139,20 @@ void Server::run(void) {
 					this->addSocket();
 
         //else its some IO operation on some other socket
-        else
-					this->handleSocket();
+        else{
+					//this->handleSocket();
+					for(int i=0;i<this->max_clients;i++){
+					 handleSocketMessage(i) ;
+				 	}
+					//displaySensors();
+				}
+
     }
+
+}
+
+void Server::displaySensors(){
+	cout << "\n\n DISPLAY \n\n";
 }
 
 void Server::addChild(void) {
@@ -174,9 +206,12 @@ void Server::handleSocket(void) {
 	for (int i = 0; i < this->max_clients; i++) {
 		this->sd = this->client_socket[i];
 
+		//read(this->sd, this->buffer, 1024);
+		//cout << "oooooooooooooooooooo" << this->buffer << endl ;
 		if(FD_ISSET(this->sd , &this->readfds)) {
 			//Check if it was for closing , and also read the
 			//incoming message
+			cout << "Entra\n\n";
 			if(0 == (this->valread = read(this->sd, this->buffer, 1024))){
 				//Somebody disconnected , get his details and print
 				this->closeSocket(i);
@@ -187,6 +222,7 @@ void Server::handleSocket(void) {
 				//set the string terminating NULL byte on the end
 				//of the data read
 				this->buffer[this->valread] = '\0';
+				//cout << "jhonathan test" << this->buffer << endl;
 				send(this->sd, this->buffer, strlen(this->buffer), 0);
 				// Remove trailing info from client
 				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
@@ -195,6 +231,93 @@ void Server::handleSocket(void) {
 			}
 		}
 	}
+}
+
+void Server::handleSocketMessage(int i) {
+
+		this->sd = this->client_socket[i];
+
+
+		if(FD_ISSET(this->sd , &this->readfds)) {
+			if(0 == (this->valread = read(this->sd, this->buffer, 1024))){
+				//Somebody disconnected , get his details and print
+				this->closeSocket(i);
+				cout << "test\n";
+			}
+			//Echo back the message that came in
+			else {
+				//set the string terminating NULL byte on the end
+				//of the data read
+				this->buffer[this->valread] = '\0';
+				//cout << "jhonathan test" << this->buffer << endl;
+				send(this->sd, this->buffer, strlen(this->buffer), 0);
+				// Remove trailing info from client
+				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
+				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
+				handleObjects(this->buffer);
+				memset(this->buffer, 0, sizeof(char) * 1025);
+				//return this->buffer;
+			}
+
+		}
+
+}
+
+void Server::handleObjects(string message){
+
+
+	size_t found;
+	if ((found = message.find("|")) != string::npos)
+	{
+    cout << "left side = " << message.substr(0,found) << endl;
+    cout << "right side = " << message.substr(found+1, string::npos) << endl;
+
+	}
+	string name = message.substr(0,found);
+	string number = message.substr(found+1, string::npos);
+	int n=0;
+	try{
+		n = stoi(number);
+		updateSensors(name,n);
+	}
+	catch(const std::invalid_argument& ia){
+		cout << "is not \n";
+		createObjects(name,number);
+
+	}
+	displaySensors();
+
+
+}
+void Server::updateSensors(string sensorName,int n){
+	//cout << this->sensors[0]->getPyshical(0)->getSensorName();
+	//cout << "entra\n";
+	for(int i=0;i<4;i++){
+		for (int j = 0; j < 3; j++) {
+			if(this->sensors[i]->getPyshical(j)->getSensorName() == sensorName){
+				//cout << "if\n\n";
+				Sensor *aux = this->sensors[i]->getPyshical(j);
+				aux->setValue(n);
+				i=4;j=3;
+			}
+		}
+	}
+}
+
+void Server::createObjects(string sensorName,string sensorUnit){
+	for(int i=0;i<4;i++){
+		for(int j=0;j<3;j++){
+			if(this->sensors[i]->getPyshical(j)->getSensorName()=="NULL"){
+				cout << "is NULL\n\n\n";
+				this->sensors[i]->getPyshical(j)->setSensor(sensorName,sensorUnit);
+				cout << "sensor created " << sensorName << " " << sensorUnit << endl;
+				cout << this->sensors[i]->getPyshical(j)->getSensorName() << "-----------\n";
+				i=4;j=3;
+				break;
+			}
+		}
+	}
+
 }
 
 void Server::closeSocket(int pos) {

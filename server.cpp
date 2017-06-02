@@ -15,6 +15,7 @@
 #include <vector>
 #include "Virtual.h"
 #include <stdexcept>
+
 using namespace std;
 
 typedef struct sockaddr Socket;
@@ -31,6 +32,7 @@ class Server {
 		fd_set readfds;
 
 		vector <Virtual *> sensors{};
+		int countSensors{0};
 
 		void setError(const char *);
 
@@ -47,13 +49,21 @@ class Server {
 		void handleSocket(void);
 		void closeSocket(int);
 		void handleSocketMessage(int);
-		void createObjects(string);
+		void handleObjects(string);
+		void createObjects(string,string);
+		void updateSensors(string sensorName,int n);
+		void displaySensors();
 	public:
 		Server() {
 			createConnection();
+			//cout << "Get in here \n\n\n\n";
 			for(int i=0;i<4;i++){
 				Virtual *aux = new Virtual();
 				this->sensors.push_back(aux);
+				for(int j=0;j<3;j++){
+					this->sensors[i]->addSensor(new Sensor());
+					//this->sensors[i]->addSensor(NULL);
+				}
 			}
 		}
 		Server(int);
@@ -106,6 +116,7 @@ void Server::maxPending(int max) {
 }
 
 void Server::run(void) {
+
 	cout << "Waiting for connections..." << endl;
 	int full = 11;
 	string messageFromSensor;
@@ -134,14 +145,25 @@ void Server::run(void) {
         else{
 					//this->handleSocket();
 					for(int i=0;i<this->max_clients;i++){
-					 handleSocketMessage(i)  ;
-
-				 }
-
+					 handleSocketMessage(i) ;
+				 	}
+					//displaySensors();
 				}
 
     }
 
+}
+
+void Server::displaySensors(){
+
+	for(int i=0;i<4;i++){
+
+			cout << this->sensors[i]->getPyshical(0)->getSensorName() << " " <<  this->sensors[i]->getPyshical(0)->getSensorValue() << " " << this->sensors[i]->getPyshical(0)->getDataType()
+			<< "   "  << this->sensors[i]->getPyshical(1)->getSensorName() << " " <<  this->sensors[i]->getPyshical(1)->getSensorValue() << " " << this->sensors[i]->getPyshical(1)->getDataType()
+			<<"    " << this->sensors[i]->getPyshical(2)->getSensorName() << " " <<  this->sensors[i]->getPyshical(2)->getSensorValue() << " " << this->sensors[i]->getPyshical(2)->getDataType() <<
+			 endl;
+
+	}
 }
 
 void Server::addChild(void) {
@@ -243,7 +265,7 @@ void Server::handleSocketMessage(int i) {
 				// Remove trailing info from client
 				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
 				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
-				createObjects(this->buffer);
+				handleObjects(this->buffer);
 				memset(this->buffer, 0, sizeof(char) * 1025);
 				//return this->buffer;
 			}
@@ -252,7 +274,7 @@ void Server::handleSocketMessage(int i) {
 
 }
 
-void Server::createObjects(string message){
+void Server::handleObjects(string message){
 
 
 	size_t found;
@@ -262,34 +284,53 @@ void Server::createObjects(string message){
     cout << "right side = " << message.substr(found+1, string::npos) << endl;
 
 	}
-
+	string name = message.substr(0,found);
 	string number = message.substr(found+1, string::npos);
+	int n=0;
 	try{
-		stoi(number);
+		n = stoi(number);
+		updateSensors(name,n);
 	}
 	catch(const std::invalid_argument& ia){
-		cout << "is not \n";
+		//cout << "is not \n";
+		createObjects(name,number);
+
+	}
+	if(countSensors==12)
+		displaySensors();
+
+
+}
+void Server::updateSensors(string sensorName,int n){
+	//cout << this->sensors[0]->getPyshical(0)->getSensorName();
+	//cout << "entra\n";
+	for(int i=0;i<4;i++){
+		for (int j = 0; j < 3; j++) {
+			if(this->sensors[i]->getPyshical(j)->getSensorName() == sensorName){
+				//cout << "if\n\n";
+				Sensor *aux = this->sensors[i]->getPyshical(j);
+				aux->setValue(n);
+				i=4;j=3;
+			}
+		}
+	}
+}
+
+void Server::createObjects(string sensorName,string sensorUnit){
+	for(int i=0;i<4;i++){
+		for(int j=0;j<3;j++){
+			if(this->sensors[i]->getPyshical(j)->getSensorName()=="NULL"){
+				//cout << "is NULL\n\n\n";
+				this->sensors[i]->getPyshical(j)->setSensor(sensorName,sensorUnit);
+				//cout << "sensor created " << sensorName << " " << sensorUnit << endl;
+				cout << this->sensors[i]->getPyshical(j)->getSensorName() << "-----------\n";
+				countSensors++;
+				i=4;j=3;
+				break;
+			}
+		}
 	}
 
-
-	/*
-
-	this->sensors[0]->addSensor(new Sensor("termometro","atm"));
-	this->sensors[0]->addSensor(new Sensor("altimetro","atm"));
-	this->sensors[0]->addSensor(new Sensor("barometro","atm"));
-
-	this->sensors[1]->addSensor(new Sensor("acelerometro","atm"));
-	this->sensors[1]->addSensor(new Sensor("umidade","atm"));
-	this->sensors[1]->addSensor(new Sensor("distancia","atm"));
-
-	this->sensors[2]->addSensor(new Sensor("visibilidade","atm"));
-	this->sensors[2]->addSensor(new Sensor("tempo","atm"));
-	this->sensors[2]->addSensor(new Sensor("turbulencia","atm"));
-
-	this->sensors[3]->addSensor(new Sensor("banheiro","atm"));
-	this->sensors[3]->addSensor(new Sensor("passaros","atm"));
-	this->sensors[3]->addSensor(new Sensor("trem_de_pouso","atm"));
-	*/
 }
 
 void Server::closeSocket(int pos) {
@@ -311,6 +352,9 @@ void Server::setError(const char *msg) {
 }
 
 int main(int argc, char **argv){
+
+
+
 	Server server{};
 	server.run();
 	return 0;
