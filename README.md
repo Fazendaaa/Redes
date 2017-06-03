@@ -6,3 +6,13 @@ Implementado por:
     Jhonathan Viudes        nº USP
     Lucas Almeida Carotta   nº USP
     Nícolas Bassetto Leite  nº USP 8937292
+
+# Compilação:
+  
+    g++ -o server server.cpp -std=gnu++11
+    g++ -o Main Main.cpp -std=gnu++11
+
+# Execução:
+
+    ./server
+    ./Main
