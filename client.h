@@ -61,7 +61,7 @@ void Client::handshake(void) {
 		this->setError("recive");
 
 	this->buffer[this->readSize] = '\0';
-	cout << "From server: " << this->buffer << endl;
+	cout  << this->buffer << endl;
 }
 
 bool Client::upload(const string msg) {

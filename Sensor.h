@@ -35,6 +35,7 @@ class Sensor{
 Sensor::Sensor(){
 	this->sensorName = "NULL";
 	this->dataType = "NULL";
+	srand (time(NULL));
 }
 Sensor::Sensor(string sensorName,string dataType){
 	this->sensorName = sensorName;
@@ -47,60 +48,51 @@ void Sensor::setSensor(string sensorName,string dataType){
 	this->dataType = dataType;
 }
 
-
-//Client* Sensor::getClient(){
-//	return &this->connection;
-//}
-
 int Sensor::getSensorValue(){
 
 	//termometor, altimetro, barometro, acelerometro, umidade, distancia, visibilidade, tempo, turbulencia.Sensor de banheiro,Sensor de birds
 
-	srand (time(NULL));
-	int x;
+	int x = rand();
 
 		if(this->sensorName == "termometro"){
-			x = rand() % 100 + 1;
+			x = x % 1000 + 1;
 		}
 		if(this->sensorName == "altimetro"){
-			x = rand() % 10 + 1;
+			x = x % 100000 + 1;
 		}
 		if(this->sensorName == "barometro"){
-			x = rand() % 10 + 1;
+			x = x % 10 + 1;
 		}
 		if(this->sensorName == "acelerometro"){
-			x = rand() % 10 + 1;
+			x = x % 100 + 1;
 		}
 		if(this->sensorName == "umidade"){
-			x = rand() % 10 + 1;
+			x = x % 100 + 1;
 		}
 		if(this->sensorName == "distancia"){
-			x = rand() % 10 + 1;
+			x = x % 100000 + 1;
 		}
 		if(this->sensorName == "visibilidade"){
-			x = rand() % 10 + 1;
+			x = x % 100 + 1;
 		}
 		if(this->sensorName == "tempo"){
-			x = rand() % 10 + 1;
+			x = x % 2;
 		}
 		if(this->sensorName == "turbulencia"){
-			x = rand() % 10 + 1;
+			x = x % 10 + 1;
 		}
 		if(this->sensorName == "banheiro"){
-			x = rand() % 10 + 1;
+			x = x % 2;
 		}
 		if(this->sensorName == "passaros"){
-			x = rand() % 10 + 1;
+			x = x % 2;
 		}
 		if(this->sensorName == "trem_de_pouso"){
-			x = rand() % 10 + 1;
+			x = x % 2 ;
 		}
 		setValue(x);
 
-
 	return x;
-
-
 
 }
 
@@ -122,21 +114,4 @@ string Sensor::getDataType(){
 	return this->dataType;
 }
 
-
-
-
-
-/*int main( ) {
-
-	Sensor teste{"barometro","atm"};
-	vector <float> val = teste.getSensorValue();
-	cout << teste.getSensorName()<< endl;
-	cout << teste.getDataType()<< endl;
-	for(int i=0;i<24;i++){
-
-		cout << val[i] << " ";
-   	}
-	cout << endl;
-
-}*/
 #endif

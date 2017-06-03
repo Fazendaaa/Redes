@@ -53,16 +53,16 @@ class Server {
 		void createObjects(string,string);
 		void updateSensors(string sensorName,int n);
 		void displaySensors();
+		string resize(string,int);
 	public:
 		Server() {
 			createConnection();
-			//cout << "Get in here \n\n\n\n";
+
 			for(int i=0;i<4;i++){
 				Virtual *aux = new Virtual();
 				this->sensors.push_back(aux);
 				for(int j=0;j<3;j++){
 					this->sensors[i]->addSensor(new Sensor());
-					//this->sensors[i]->addSensor(NULL);
 				}
 			}
 		}
@@ -143,11 +143,9 @@ void Server::run(void) {
 
         //else its some IO operation on some other socket
         else{
-					//this->handleSocket();
 					for(int i=0;i<this->max_clients;i++){
 					 handleSocketMessage(i) ;
 				 	}
-					//displaySensors();
 				}
 
     }
@@ -156,14 +154,35 @@ void Server::run(void) {
 
 void Server::displaySensors(){
 
+	cout << "-----------------------------\n";
 	for(int i=0;i<4;i++){
-
-			cout << this->sensors[i]->getPyshical(0)->getSensorName() << " " <<  this->sensors[i]->getPyshical(0)->getSensorValue() << " " << this->sensors[i]->getPyshical(0)->getDataType()
-			<< "   "  << this->sensors[i]->getPyshical(1)->getSensorName() << " " <<  this->sensors[i]->getPyshical(1)->getSensorValue() << " " << this->sensors[i]->getPyshical(1)->getDataType()
-			<<"    " << this->sensors[i]->getPyshical(2)->getSensorName() << " " <<  this->sensors[i]->getPyshical(2)->getSensorValue() << " " << this->sensors[i]->getPyshical(2)->getDataType() <<
-			 endl;
+			cout << "------SENSOR VIRTUAL " << i+1 << "-------\n";
+			cout <<"|" << resize(this->sensors[i]->getPyshical(0)->getSensorName(),13) << "|" <<
+			resize(to_string(this->sensors[i]->getPyshical(0)->getSensorValue()),5) << "|" <<
+			resize(this->sensors[i]->getPyshical(0)->getDataType(),7)<< "|\n";
+			cout<< "|"  << resize(this->sensors[i]->getPyshical(1)->getSensorName(),13) << "|" <<
+			resize(to_string(this->sensors[i]->getPyshical(1)->getSensorValue()),5) << "|" <<
+			resize(this->sensors[i]->getPyshical(1)->getDataType(),7)<<"|\n";
+			cout<<"|" << resize(this->sensors[i]->getPyshical(2)->getSensorName(),13) << "|" <<
+			resize(to_string(this->sensors[i]->getPyshical(2)->getSensorValue()),5) << "|" <<
+			resize(this->sensors[i]->getPyshical(2)->getDataType(),7) << "|\n";
+			cout << "-----------------------------\n";
 
 	}
+	cout << "\n";
+
+}
+
+
+string Server::resize(string s,int i){
+	while (s.length()<i){
+		if(i==7){
+			s = s + " ";
+		}
+		else
+			s =  " " + s;
+	}
+	return s;
 }
 
 void Server::addChild(void) {
@@ -207,42 +226,11 @@ void Server::setSocket(void) {
 		if(this->client_socket[i] == 0) {
 			this->client_socket[i] = this->new_socket;
 			cout << "Adding to list of sockets as: " << i << endl;
-
 			break;
 		}
 	}
 }
 
-void Server::handleSocket(void) {
-	for (int i = 0; i < this->max_clients; i++) {
-		this->sd = this->client_socket[i];
-
-		//read(this->sd, this->buffer, 1024);
-		//cout << "oooooooooooooooooooo" << this->buffer << endl ;
-		if(FD_ISSET(this->sd , &this->readfds)) {
-			//Check if it was for closing , and also read the
-			//incoming message
-			cout << "Entra\n\n";
-			if(0 == (this->valread = read(this->sd, this->buffer, 1024))){
-				//Somebody disconnected , get his details and print
-				this->closeSocket(i);
-				cout << "test\n";
-			}
-			//Echo back the message that came in
-			else {
-				//set the string terminating NULL byte on the end
-				//of the data read
-				this->buffer[this->valread] = '\0';
-				//cout << "jhonathan test" << this->buffer << endl;
-				send(this->sd, this->buffer, strlen(this->buffer), 0);
-				// Remove trailing info from client
-				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
-				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
-				memset(this->buffer, 0, sizeof(char) * 1025);
-			}
-		}
-	}
-}
 
 void Server::handleSocketMessage(int i) {
 
@@ -253,37 +241,31 @@ void Server::handleSocketMessage(int i) {
 			if(0 == (this->valread = read(this->sd, this->buffer, 1024))){
 				//Somebody disconnected , get his details and print
 				this->closeSocket(i);
-				cout << "test\n";
 			}
 			//Echo back the message that came in
 			else {
 				//set the string terminating NULL byte on the end
 				//of the data read
 				this->buffer[this->valread] = '\0';
-				//cout << "jhonathan test" << this->buffer << endl;
 				send(this->sd, this->buffer, strlen(this->buffer), 0);
 				// Remove trailing info from client
 				this->buffer[strcspn(this->buffer, "\r\n")] = 0;
-				cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
+				//cout << "MESSAGE from client #" << i <<": " << this->buffer << endl;
 				handleObjects(this->buffer);
 				memset(this->buffer, 0, sizeof(char) * 1025);
-				//return this->buffer;
+
 			}
 
 		}
 
 }
 
+//olha a mensagem do clente se conter unidade o sensor não foi registrado logo cria um objeto
+//senão atualiza valor dos sensores
 void Server::handleObjects(string message){
-
-
 	size_t found;
-	if ((found = message.find("|")) != string::npos)
-	{
-    cout << "left side = " << message.substr(0,found) << endl;
-    cout << "right side = " << message.substr(found+1, string::npos) << endl;
+	found = message.find("|");
 
-	}
 	string name = message.substr(0,found);
 	string number = message.substr(found+1, string::npos);
 	int n=0;
@@ -292,22 +274,20 @@ void Server::handleObjects(string message){
 		updateSensors(name,n);
 	}
 	catch(const std::invalid_argument& ia){
-		//cout << "is not \n";
+
 		createObjects(name,number);
 
 	}
-	if(countSensors==12)
+	if(countSensors==12) // se todos sensores forem criados, mostra sensores
 		displaySensors();
-
-
 }
+
+
+//atualiza sensor com mensagem do client
 void Server::updateSensors(string sensorName,int n){
-	//cout << this->sensors[0]->getPyshical(0)->getSensorName();
-	//cout << "entra\n";
 	for(int i=0;i<4;i++){
 		for (int j = 0; j < 3; j++) {
 			if(this->sensors[i]->getPyshical(j)->getSensorName() == sensorName){
-				//cout << "if\n\n";
 				Sensor *aux = this->sensors[i]->getPyshical(j);
 				aux->setValue(n);
 				i=4;j=3;
@@ -316,14 +296,12 @@ void Server::updateSensors(string sensorName,int n){
 	}
 }
 
+//cria sensores no servidor
 void Server::createObjects(string sensorName,string sensorUnit){
 	for(int i=0;i<4;i++){
 		for(int j=0;j<3;j++){
 			if(this->sensors[i]->getPyshical(j)->getSensorName()=="NULL"){
-				//cout << "is NULL\n\n\n";
 				this->sensors[i]->getPyshical(j)->setSensor(sensorName,sensorUnit);
-				//cout << "sensor created " << sensorName << " " << sensorUnit << endl;
-				cout << this->sensors[i]->getPyshical(j)->getSensorName() << "-----------\n";
 				countSensors++;
 				i=4;j=3;
 				break;
@@ -352,9 +330,6 @@ void Server::setError(const char *msg) {
 }
 
 int main(int argc, char **argv){
-
-
-
 	Server server{};
 	server.run();
 	return 0;

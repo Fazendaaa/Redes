@@ -61,21 +61,21 @@ class Flight {
 
 
 
-    addSensor(new Sensor("termometro","atm"));
-    addSensor(new Sensor("altimetro","atm"));
-    addSensor(new Sensor("barometro","atm"));
+    addSensor(new Sensor("termometro","celsius"));
+    addSensor(new Sensor("altimetro","pes"));
+    addSensor(new Sensor("barometro","mmHg"));
 
-    addSensor(new Sensor("acelerometro","atm"));
-    addSensor(new Sensor("umidade","atm"));
-    addSensor(new Sensor("distancia","atm"));
+    addSensor(new Sensor("acelerometro","m/s"));
+    addSensor(new Sensor("umidade","%"));
+    addSensor(new Sensor("distancia","km"));
 
-    addSensor(new Sensor("visibilidade","atm"));
-    addSensor(new Sensor("tempo","atm"));
-    addSensor(new Sensor("turbulencia","atm"));
+    addSensor(new Sensor("visibilidade","%"));
+    addSensor(new Sensor("tempo","ruim"));
+    addSensor(new Sensor("turbulencia","nivel"));
 
-    addSensor(new Sensor("banheiro","atm"));
-    addSensor(new Sensor("passaros","atm"));
-    addSensor(new Sensor("trem_de_pouso","atm"));
+    addSensor(new Sensor("banheiro","ocupado"));
+    addSensor(new Sensor("passaros","perigo"));
+    addSensor(new Sensor("trem_de_pouso","aberto"));
 
     for(int i=0;i<12;i++){
       addClient(new Client());
@@ -101,15 +101,16 @@ class Flight {
 
     void sendInformation(){
       for(int k=0;k<20;k++){
-        for(int i=0;i<4;i++){
-
+        for(int i=0;i<12;i++){
+            usleep(200000);
             Client *aux = this->connection[i];
             string message = this->sensors[i]->getSensorName();
             message = message + "|" + to_string(this->sensors[i]->getSensorValue()) + "\n";
             aux->upload(message);
 
+
         }
-        usleep(20000);
+        //usleep(20000);
       }
     }
 
