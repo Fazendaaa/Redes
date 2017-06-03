@@ -11,7 +11,6 @@ using namespace std;
 
 class Flight {
  private:
-  //vector<Virtual *> sensors{};
   vector <Sensor *> sensors{};
   vector <Client *> connection{};
 
@@ -21,9 +20,6 @@ class Flight {
 
   }
 
-  //void addSensor(Virtual *sensor) {
-   //this->sensors.push_back(sensor);
-  //}
   void addSensor(Sensor *sensor){
     this->sensors.push_back(sensor);
   }
@@ -32,34 +28,9 @@ class Flight {
     this->connection.push_back(client);
   }
 
-//  Virtual * getVirtual(int i){
-//    return this->sensors[i];
-//  }
+
 
   void generateAllSensors(){
-    /*Sensor sensor1{"termometro","atm"};
-    Sensor sensor2{"altimetro","atm"};
-    Sensor sensor3{"barometro","atm"};
-    Sensor sensor4{"acelerometro","atm"};
-    Sensor sensor5{"umidade","atm"};
-    Sensor sensor6{"distancia","atm"};
-    Sensor sensor7{"visibilidade","atm"};
-    Sensor sensor8{"tempo","atm"};
-    Sensor sensor9{"turbulencia","atm"};
-    Sensor sensor10{"banheiro","atm"};
-    Sensor sensor11{"passaros","atm"};
-    Sensor sensor12{"trem_de_pouso","atm"};
-
-    this->sensors[1]->addSensor(new Sensor("acelerometro","atm"));
-    this->sensors[1]->addSensor(new Sensor("umidade","atm"));
-    this->sensors[1]->addSensor(new Sensor("distancia","atm"));
-    */
-    //for(int i=0;i<4;i++){
-    //  Virtual *aux = new Virtual();
-    //  this->sensors.push_back(aux);
-    //}
-
-
 
     addSensor(new Sensor("termometro","celsius"));
     addSensor(new Sensor("altimetro","pes"));
@@ -81,7 +52,7 @@ class Flight {
       addClient(new Client());
     }
 
-    }
+  }
 
     void connectSensors(){
       bool x;
@@ -91,46 +62,22 @@ class Flight {
           string message = this->sensors[i]->getSensorName();
           message = message + "|" + this->sensors[i]->getDataType();
           aux->upload(message);
-          //do {
-          //  x = aux->upload(message);
-          //} while(x);
-
 
       }
     }
 
     void sendInformation(){
-      for(int k=0;k<20;k++){
+      for(int k=0;k<24;k++){
         for(int i=0;i<12;i++){
             usleep(200000);
             Client *aux = this->connection[i];
             string message = this->sensors[i]->getSensorName();
             message = message + "|" + to_string(this->sensors[i]->getSensorValue()) + "\n";
             aux->upload(message);
-
-
         }
-        //usleep(20000);
       }
     }
 
-  /*  void sendInformation(){
-      for(int k=0;k<2000;k++){
-        for(int i=0;i<4;i++){
-          for(int j=0;j<3;j++){
-            Client *aux = this->sensors[i]->getPyshical(j)->getClient();
-            string message = this->sensors[i]->getPyshical(j)->getSensorName();
-            message = message + "|" + to_string(this->sensors[i]->getPyshical(j)->getSensorValue()) + "\n";
-            aux->upload(message);
-          }
-        }
-        usleep(20000);
-      }
-    }*/
-
-  //Sensor getSensors()  {
-  // return this->virtual;
-  //}
 };
 
 

@@ -85,18 +85,4 @@ void Client::setError(const string msg) {
 	exit(EXIT_FAILURE);
 }
 
-/*int main(int argc, char **argv) {
-	Client client_1{}, client_2{}, client_3{};
-
-	for(int i = 0; i < 80; i++) {
-		client_1.upload("C1\n");
-		client_2.upload("C2\n");
-		client_3.upload("C3\n");
-	}
-	cout << "test" << '\n';
-
-	//client_1.quit();
-	//client_2.quit();
-	//client_3.quit();
-}*/
 #endif

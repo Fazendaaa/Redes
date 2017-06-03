@@ -154,7 +154,7 @@ void Server::run(void) {
 
 void Server::displaySensors(){
 
-	cout << "-----------------------------\n";
+	cout << "+___________________________+\n";
 	for(int i=0;i<4;i++){
 			cout << "------SENSOR VIRTUAL " << i+1 << "-------\n";
 			cout <<"|" << resize(this->sensors[i]->getPyshical(0)->getSensorName(),13) << "|" <<
